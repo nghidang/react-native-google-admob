@@ -1,0 +1,185 @@
+import React, {useState} from 'react';
+import {Platform, View, Dimensions} from 'react-native';
+import NativeAdView, {
+  AdBadge,
+  IconView,
+  HeadlineView,
+  TaglineView,
+  AdvertiserView,
+  StoreView,
+  PriceView,
+  StarRatingView,
+  MediaView,
+  CallToActionView,
+} from 'react-native-admob-native-ads';
+
+const NATIVE_AD_ID =
+  Platform.OS === 'ios'
+    ? 'ca-app-pub-3940256099942544/3986624511'
+    : 'ca-app-pub-3940256099942544/2247696110';
+
+const NATIVE_AD_VIDEO_ID =
+  Platform.OS === 'ios'
+    ? 'ca-app-pub-3940256099942544/2521693316'
+    : 'ca-app-pub-3940256099942544/1044960115';
+
+export const AdView = ({media, type, delay = 0}) => {
+  const [aspectRatio, setAspectRatio] = useState(1);
+  const [adLoaded, setAdLoaded] = useState(false);
+  const _onAdFailedToLoad = (event) => {
+    console.log(event.nativeEvent);
+    setAdLoaded(false);
+  };
+
+  const _onAdLoaded = () => {
+    console.log('Ad has loaded successfully');
+  };
+
+  const _onAdClicked = () => {
+    console.log('User has clicked the ad');
+  };
+
+  const _onAdImpression = () => {
+    console.log('Ad impressionr recorded');
+  };
+
+  const _onUnifiedNativeAdLoaded = (event) => {
+    console.log(event);
+    console.log('Views have populated with the Ad');
+    console.log(event.aspectRatio);
+    setAdLoaded(true);
+    setAspectRatio(
+      event.aspectRatio > 0
+        ? event.aspectRatio
+        : event.images[0].width / event.images[0].height,
+    );
+  };
+
+  return (
+    <NativeAdView
+      onAdLoaded={_onAdLoaded}
+      onAdFailedToLoad={_onAdFailedToLoad}
+      onAdLeftApplication={() => {
+        console.log('ad has left the application');
+      }}
+      delayAdLoading={delay}
+      onAdClicked={_onAdClicked}
+      onAdImpression={_onAdImpression}
+      onUnifiedNativeAdLoaded={_onUnifiedNativeAdLoaded}
+      refreshInterval={60000 * 2}
+      style={{
+        alignSelf: 'center',
+        borderWidth: 1,
+        borderColor: 'red',
+      }}
+      adUnitID={type === 'image' ? NATIVE_AD_ID : NATIVE_AD_VIDEO_ID}>
+      <View>
+        <View
+          style={{
+            marginBottom: 20,
+          }}>
+          <AdBadge
+            style={{
+              width: 15,
+              height: 15,
+              borderWidth: 1,
+              borderRadius: 2,
+              borderColor: 'green',
+            }}
+            textStyle={{
+              fontSize: 9,
+              color: 'green',
+            }}
+          />
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <IconView
+            style={{
+              width: 60,
+              height: 60,
+            }}
+          />
+          <View
+            style={{
+              width: '60%',
+              maxWidth: '60%',
+              paddingHorizontal: 6,
+            }}>
+            <HeadlineView
+              hello="abc"
+              style={{
+                fontWeight: 'bold',
+                fontSize: 13,
+              }}
+            />
+            <TaglineView
+              numberOfLines={2}
+              style={{
+                fontSize: 11,
+              }}
+            />
+            <AdvertiserView
+              style={{
+                fontSize: 10,
+                color: 'gray',
+              }}
+            />
+
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <StarRatingView
+                starSize={12}
+                fullStarColor="orange"
+                emptyStarColor="gray"
+                containerStyle={{
+                  width: 65,
+                  marginTop: 4,
+                }}
+              />
+              <StoreView
+                style={{
+                  fontSize: 12,
+                  marginLeft: 10,
+                }}
+              />
+              <PriceView
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 10,
+                }}
+              />
+            </View>
+          </View>
+          <CallToActionView
+            style={{
+              height: 45,
+              paddingHorizontal: 12,
+              backgroundColor: 'purple',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 5,
+              elevation: 10,
+            }}
+            textStyle={{color: 'white', fontSize: 14}}
+          />
+        </View>
+
+        {media && (
+          <MediaView
+            style={{
+              width: Dimensions.get('window').width - 15 * 2,
+              height: (Dimensions.get('window').width - 15 * 2) / aspectRatio,
+            }}
+          />
+        )}
+      </View>
+    </NativeAdView>
+  );
+};

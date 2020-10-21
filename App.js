@@ -1,114 +1,298 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
+import React, {useState} from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
+  FlatList,
+  Image,
+  Modal,
   Text,
-  StatusBar,
+  TouchableOpacity,
+  View,
+  ScrollView,
 } from 'react-native';
+import {AdView} from './src/AdView';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+function listItemsGenerator(num) {
+  let list = [];
+  for (var i = 0; i < num; i++) {
+    list = [
+      ...list,
+      ...['Apple', 'Banana', 'Orange', 'Pineapple', 'Pancakes', 'ad'],
+    ];
+  }
 
-const App: () => React$Node = () => {
+  return list;
+}
+
+const App = () => {
+  const [modalData, setModalData] = useState({
+    visible: false,
+    title: '',
+    info: '',
+    type: null,
+  });
+  const [selected, setSelected] = useState('image');
+
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
+    <View
+      style={{
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <TouchableOpacity
+        onPress={() =>
+          setModalData({
+            visible: true,
+            title: 'Simple Banner Ad',
+            info: 'A banner ad without full size image.',
+            type: 'banner',
+          })
+        }
+        activeOpacity={0.8}
+        style={{
+          backgroundColor: 'orange',
+          width: '90%',
+          alignItems: 'center',
+          height: 50,
+          justifyContent: 'center',
+          borderRadius: 5,
+          marginBottom: 5,
+        }}>
+        <Text
+          style={{
+            color: 'white',
+          }}>
+          Simple Banner Ad
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() =>
+          setModalData({
+            visible: true,
+            title: 'A Video/Image Ad',
+            info: 'An ad with a full size image or video',
+            type: 'media',
+          })
+        }
+        activeOpacity={0.8}
+        style={{
+          backgroundColor: 'orange',
+          width: '90%',
+          alignItems: 'center',
+          height: 50,
+          justifyContent: 'center',
+          borderRadius: 5,
+          marginBottom: 5,
+        }}>
+        <Text
+          style={{
+            color: 'white',
+          }}>
+          Ad with Video/Image
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() =>
+          setModalData({
+            visible: true,
+            title: 'Ads in a List',
+            info:
+              'You can see the ads are displayed in a list after an interval of 3 items',
+            type: 'list',
+          })
+        }
+        activeOpacity={0.8}
+        style={{
+          backgroundColor: 'orange',
+          width: '90%',
+          alignItems: 'center',
+          height: 50,
+          justifyContent: 'center',
+          borderRadius: 5,
+          marginBottom: 5,
+        }}>
+        <Text
+          style={{
+            color: 'white',
+          }}>
+          Multiple Ads in a List
+        </Text>
+      </TouchableOpacity>
+
+      <Modal visible={modalData.visible} animationType="slide">
+        <View
+          style={{
+            backgroundColor: 'white',
+            height: '100%',
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text
+            style={{
+              color: 'black',
+              fontSize: 25,
+              letterSpacing: 1,
+            }}>
+            {modalData.title}
+          </Text>
+          <Text
+            style={{
+              width: '90%',
+              alignSelf: 'center',
+              color: 'gray',
+              textAlign: 'center',
+              marginBottom: 30,
+            }}>
+            {modalData.info}
+          </Text>
+
+          {modalData.type === 'media' ? (
+            <View
+              style={{
+                height: 300,
+              }}>
+              <ScrollView
+                style={{
+                //   height: 401,
+                }}
+                contentContainerStyle={{
+                //   height: 401,
+                }}>
+                {modalData.type === 'banner' || modalData.type === 'media' ? (
+                  <AdView type={selected} media={modalData.type === 'media'} />
+                ) : null}
+              </ScrollView>
             </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
+          ) : modalData.type === 'banner' ? (
+            <AdView type={selected} media={modalData.type === 'media'} />
+          ) : null}
+
+          {modalData.type === 'list' ? (
+            <View
+              style={{
+                height: 400,
+                width: '100%',
+              }}>
+              <FlatList
+                style={{
+                  height: 300,
+                  width: '100%',
+                }}
+                data={listItemsGenerator(10)}
+                renderItem={({item, index}) =>
+                  item === 'ad' ? (
+                    <AdView type="image" delay={50 * index} media={false} />
+                  ) : (
+                    <View
+                      style={{
+                        borderBottomWidth: 1,
+                        borderBottomColor: 'orange',
+                        width: '100%',
+                        paddingHorizontal: 12,
+                      }}>
+                      <Text
+                        style={{
+                          paddingHorizontal: 12,
+                          height: 60,
+                          textAlignVertical: 'center',
+                        }}>
+                        {item}
+                      </Text>
+                    </View>
+                  )
+                }
+              />
             </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
+          ) : null}
+
+          {modalData.type === 'media' ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                marginTop: 50,
+                width: '100%',
+                alignSelf: 'center',
+              }}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setSelected('video')}
+                style={{
+                  width: '90%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 5,
+                  marginTop: 20,
+                }}>
+                <Text
+                  style={{
+                    color: selected === 'video' ? 'orange' : 'black',
+                    fontSize: 16,
+                    letterSpacing: 1,
+                  }}>
+                  Video Ad
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setSelected('image')}
+                style={{
+                  width: '90%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 5,
+                  marginTop: 20,
+                }}>
+                <Text
+                  style={{
+                    color: selected === 'image' ? 'orange' : 'black',
+                    fontSize: 16,
+                    letterSpacing: 1,
+                  }}>
+                  Image Ad
+                </Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+          ) : null}
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              setModalData({
+                ...modalData,
+                visible: false,
+              })
+            }
+            style={{
+              width: '90%',
+              alignItems: 'center',
+              height: 100,
+              width: 100,
+              borderWidth: 1,
+              borderColor: 'orange',
+              justifyContent: 'center',
+              borderRadius: 100,
+              marginBottom: 5,
+              marginTop: 40,
+              backgroundColor: 'white',
+            }}>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 16,
+                letterSpacing: 1,
+              }}>
+              Go Back
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
 
 export default App;
