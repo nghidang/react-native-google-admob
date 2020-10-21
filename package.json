@@ -11,7 +11,11 @@
   },
   "dependencies": {
     "react": "16.13.1",
-    "react-native": "0.63.3"
+    "react-native": "0.63.3",
+    "react-native-admob-native-ads": "https://github.com/nghidang/react-native-admob-native-ads#paperbit",
+    "react-native-gesture-handler": "^1.8.0",
+    "react-native-star-rating": "^1.1.0",
+    "react-native-vector-icons": "^7.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
